@@ -44,6 +44,29 @@ fn follow_commands_part_1(commands: &Vec<Command>) -> (u32, u32) {
     (horizontal_position, vertical_position)
 }
 
+fn follow_commands_part_2(commands: &Vec<Command>) -> (u32, u32) {
+    let mut horizontal_position: u32 = 0;
+    let mut vertical_position: u32 = 0;
+    let mut aim: u32 = 0;
+    for command in commands {
+        match command.direction {
+            FORWARD_DIRECTION => {
+                horizontal_position += command.amount;
+                vertical_position += command.amount * aim;
+            }
+            DOWNWARD_DIRECTION => {
+                aim += command.amount;
+            }
+            UPWARD_DIRECTION => {
+                aim -= command.amount;
+            }
+            &_ => break,
+        }
+    }
+
+    (horizontal_position, vertical_position)
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let path = &args[1];
@@ -53,4 +76,8 @@ fn main() {
     let (horizontal_position, vertical_position) = follow_commands_part_1(&input);
     let part_1 = horizontal_position * vertical_position;
     println!("Part 1: {:?}", part_1);
+
+    let (horizontal_position, vertical_position) = follow_commands_part_2(&input);
+    let part_2 = horizontal_position * vertical_position;
+    println!("Part 2: {:?}", part_2);
 }
