@@ -16,21 +16,9 @@ fn split_input(string: &String) -> Vec<u16> {
         .collect()
 }
 
-fn count_increments(input: &Vec<u16>) -> u16 {
+fn count_window_increments(input: &Vec<u16>, size: usize) -> u16 {
     let mut count: u16 = 0;
-
-    for index in 1..input.len() {
-        if input[index] > input[index - 1] {
-            count += 1;
-        }
-    }
-
-    count
-}
-
-fn count_window_increments(input: &Vec<u16>) -> u16 {
-    let mut count: u16 = 0;
-    let mut windows = input.windows(3);
+    let mut windows = input.windows(size);
 
     let mut previous_sum: u16 = 0;
 
@@ -57,9 +45,9 @@ fn main() {
     let input = read_file(path).expect("Error reading file.");
     let input = split_input(&input);
 
-    let part_1 = count_increments(&input);
+    let part_1 = count_window_increments(&input, 1);
     println!("Part 1: {:?}", part_1);
 
-    let part_2 = count_window_increments(&input);
+    let part_2 = count_window_increments(&input, 3);
     println!("Part 2: {:?}", part_2);
 }
