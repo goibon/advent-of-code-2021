@@ -23,7 +23,7 @@ const FORWARD_DIRECTION: &str = "forward";
 const DOWNWARD_DIRECTION: &str = "down";
 const UPWARD_DIRECTION: &str = "up";
 
-fn follow_commands(commands: &Vec<Command>) -> (u32, u32) {
+fn follow_commands_part_1(commands: &Vec<Command>) -> (u32, u32) {
     let mut horizontal_position: u32 = 0;
     let mut vertical_position: u32 = 0;
     for command in commands {
@@ -50,7 +50,7 @@ fn main() {
 
     let input = utils::read_file(path).expect("Error reading file.");
     let input = split_input(&input);
-    let (horizontal_position, vertical_position) = follow_commands(&input);
+    let (horizontal_position, vertical_position) = follow_commands_part_1(&input);
     let part_1 = horizontal_position * vertical_position;
     println!("Part 1: {:?}", part_1);
 }
