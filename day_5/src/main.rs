@@ -89,6 +89,29 @@ fn mark_affected_coordinates_in_map(map: &mut HashMap<Coordinate, u32>, line: &L
             let entry = map.entry(coordinate).or_insert(0);
             *entry += 1;
         }
+    } else {
+        let mut x = line.start.x;
+        let mut y = line.start.y;
+        let distance = (line.end.x as i32 - line.start.x as i32).abs() as u32;
+
+        let increment_x = line.end.x > line.start.x;
+        let increment_y = line.end.y > line.start.y;
+        for _ in 0..distance + 1 {
+            let coordinate = Coordinate { x, y };
+            let entry = map.entry(coordinate).or_insert(0);
+            *entry += 1;
+
+            if increment_x {
+                x += 1;
+            } else {
+                x -= 1;
+            }
+            if increment_y {
+                y += 1;
+            } else {
+                y -= 1;
+            }
+        }
     }
 }
 
@@ -112,6 +135,22 @@ fn part_1(input: &[&str]) {
     println!("Part 1: {:?}", dangerous_spot_count);
 }
 
+fn part_2(input: &[&str]) {
+    let lines: Vec<Line> = input.iter().map(|line| Line::new(line)).collect();
+    let mut map: HashMap<Coordinate, u32> = HashMap::new();
+
+    for line in lines.iter() {
+        mark_affected_coordinates_in_map(&mut map, line);
+    }
+
+    let dangerous_spot_count = map
+        .values()
+        .filter(|&&entry| entry > 1)
+        .collect::<Vec<&u32>>()
+        .len();
+    println!("Part 2: {:?}", dangerous_spot_count);
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let path = &args[1];
@@ -119,4 +158,5 @@ fn main() {
     let input = utils::read_file(path).expect("Error reading file.");
     let input = split_input(&input);
     part_1(&input);
+    part_2(&input);
 }
