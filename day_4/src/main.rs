@@ -14,6 +14,7 @@ struct Board {
     columns: Vec<usize>,
     row_count: usize,
     column_count: usize,
+    has_won: bool,
 }
 
 impl Board {
@@ -24,6 +25,7 @@ impl Board {
             columns: vec![0; column_count],
             row_count,
             column_count,
+            has_won: false,
         }
     }
 
@@ -33,6 +35,7 @@ impl Board {
             self.columns[x.column] += 1;
 
             if self.rows[x.row] >= self.row_count || self.columns[x.column] >= self.column_count {
+                self.has_won = true;
                 true
             } else {
                 false
@@ -115,6 +118,28 @@ fn part_1(draw_order: &Vec<u32>, boards: &[Board]) {
     println!("Part 1: {:?}", winning_number * &sum_of_unmarked_numbers);
 }
 
+fn part_2(draw_order: &[u32], boards: &[Board]) {
+    let mut winning_number: u32 = 0;
+    let mut sum_of_unmarked_numbers: u32 = 0;
+    let mut boards = boards.to_vec();
+
+    for drawn_number in draw_order.iter() {
+        if boards.len() == 1 && boards[0].mark_number(drawn_number) {
+            sum_of_unmarked_numbers = boards[0].sum_unmarked_numbers();
+            winning_number = *drawn_number;
+            break;
+        }
+
+        for board in boards.iter_mut() {
+            board.mark_number(drawn_number);
+        }
+
+        boards.retain(|board| !board.has_won);
+    }
+
+    println!("Part 2: {:?}", winning_number * &sum_of_unmarked_numbers);
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let path = &args[1];
@@ -122,4 +147,5 @@ fn main() {
     let input = utils::read_file(path).expect("Error reading file.");
     let (draw_order, boards) = split_input(&input);
     part_1(&draw_order, &boards);
+    part_2(&draw_order, &boards);
 }
