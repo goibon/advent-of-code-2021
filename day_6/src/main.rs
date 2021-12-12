@@ -24,10 +24,10 @@ fn convert_iterator_to_map(input: &[u32]) -> HashMap<u32, u32> {
     map
 }
 
-fn part_1(input: &[u32]) {
+fn calculate_fish_amount_after_days(input: &[u32], amount_of_days: u32) -> u32 {
     let mut map = convert_iterator_to_map(input);
     let mut result: u32 = 0;
-    for day in 0..80 {
+    for day in 0..amount_of_days {
         let mut new_map: HashMap<u32, u32> = HashMap::new();
         for (key, &value) in map.iter().sorted() {
             match key {
@@ -48,13 +48,13 @@ fn part_1(input: &[u32]) {
             }
         }
 
-        if day == 79 {
+        if day == amount_of_days - 1 {
             result = new_map.values().sum();
         }
         map = new_map;
     }
 
-    println!("Part 1: {:?}", result)
+    result
 }
 
 fn main() {
@@ -63,5 +63,6 @@ fn main() {
 
     let input = utils::read_file(path).expect("Error reading file.");
     let input = split_input(&input);
-    part_1(&input);
+    let part_1 = calculate_fish_amount_after_days(&input, 80);
+    println!("Part 1: {:?}", part_1);
 }
