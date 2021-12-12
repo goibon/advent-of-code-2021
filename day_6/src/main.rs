@@ -65,4 +65,6 @@ fn main() {
     let input = split_input(&input);
     let part_1 = calculate_fish_amount_after_days(&input, 80);
     println!("Part 1: {:?}", part_1);
+    let part_2 = calculate_fish_amount_after_days(&input, 256);
+    println!("Part 1: {:?}", part_2);
 }
