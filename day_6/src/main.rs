@@ -14,8 +14,8 @@ fn split_input(string: &String) -> Vec<u32> {
         .collect()
 }
 
-fn convert_iterator_to_map(input: &[u32]) -> HashMap<u32, u32> {
-    let mut map: HashMap<u32, u32> = HashMap::new();
+fn convert_iterator_to_map(input: &[u32]) -> HashMap<u32, u64> {
+    let mut map: HashMap<u32, u64> = HashMap::new();
     for &number in input.iter() {
         map.entry(number)
             .and_modify(|entry| *entry += 1)
@@ -24,11 +24,11 @@ fn convert_iterator_to_map(input: &[u32]) -> HashMap<u32, u32> {
     map
 }
 
-fn calculate_fish_amount_after_days(input: &[u32], amount_of_days: u32) -> u32 {
+fn calculate_fish_amount_after_days(input: &[u32], amount_of_days: u32) -> u64 {
     let mut map = convert_iterator_to_map(input);
-    let mut result: u32 = 0;
+    let mut result: u64 = 0;
     for day in 0..amount_of_days {
-        let mut new_map: HashMap<u32, u32> = HashMap::new();
+        let mut new_map: HashMap<u32, u64> = HashMap::new();
         for (key, &value) in map.iter().sorted() {
             match key {
                 0 => {
