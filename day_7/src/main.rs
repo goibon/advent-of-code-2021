@@ -34,6 +34,22 @@ fn part_1(input: &[i32]) {
     println!("Part 1: {:?}", total_fuel_used);
 }
 
+fn get_triangle_number(n: f64) -> f64 {
+    (n * (n + 1.0)) / 2.0
+}
+
+fn part_2(input: &[i32]) {
+    let sum: f64 = input.iter().map(|&f| f as f64).sum();
+    let average = (sum / input.len() as f64).floor();
+    let mut total_fuel_used = 0.0;
+    for &value in input.iter() {
+        let distance_to_target = (value as f64 - average).abs();
+        total_fuel_used += get_triangle_number(distance_to_target);
+    }
+
+    println!("Part 2: {:?}", total_fuel_used);
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let path = &args[1];
@@ -41,4 +57,5 @@ fn main() {
     let input = utils::read_file(path).expect("Error reading file.");
     let input = split_input(&input);
     part_1(&input);
+    part_2(&input);
 }
