@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::env;
 
 fn split_input(string: &String) -> Vec<Vec<u32>> {
@@ -92,6 +93,56 @@ fn part_1(input: &Vec<Vec<u32>>) {
     println!("Part 1: {:?}", result);
 }
 
+fn get_adjacent_indices_higher_in_value(
+    row: usize,
+    column: usize,
+    map: &Vec<Vec<u32>>,
+) -> Vec<(usize, usize)> {
+    let value = map[row][column];
+    get_adjacent_indices(column, row, map[row].len() - 1, map.len() - 1)
+        .iter()
+        .cloned()
+        .filter(|neighbor| map[neighbor.1][neighbor.0] > value)
+        .collect()
+}
+
+fn get_basin_members(
+    input: &Vec<Vec<u32>>,
+    row: usize,
+    column: usize,
+) -> HashMap<(usize, usize), u32> {
+    let value = input[row][column];
+    let higher_value_neighbors: Vec<(usize, usize)> =
+        get_adjacent_indices_higher_in_value(row, column, input)
+            .iter()
+            .cloned()
+            .filter(|(neighbor_column, neighbor_row)| input[*neighbor_row][*neighbor_column] < 9)
+            .collect();
+    if higher_value_neighbors.is_empty() {
+        HashMap::from([((row, column), value)])
+    } else {
+        let mut partial_basin: HashMap<(usize, usize), u32> =
+            HashMap::from([((row, column), value)]);
+        for (neighbor_column, neighbor_row) in higher_value_neighbors {
+            partial_basin.extend(get_basin_members(input, neighbor_row, neighbor_column));
+        }
+        partial_basin
+    }
+}
+
+fn part_2(input: &Vec<Vec<u32>>) {
+    let mut basins: Vec<usize> = Vec::new();
+    for low_point in find_all_low_points(input) {
+        let basin = get_basin_members(input, low_point.row, low_point.column);
+        basins.push(basin.len());
+    }
+    basins.sort();
+    let product_of_top_3_largest_basins: usize =
+        basins.iter().cloned().skip(basins.len() - 3).product();
+
+    println!("Part 2: {:?}", product_of_top_3_largest_basins);
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let path = &args[1];
@@ -100,4 +151,5 @@ fn main() {
     let input = split_input(&input);
 
     part_1(&input);
+    part_2(&input);
 }
