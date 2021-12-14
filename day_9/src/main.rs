@@ -60,21 +60,36 @@ fn is_point_lower_than_orthogonal_neighbors(
     is_lower_than_all_adjacent_points
 }
 
-fn part_1(input: &Vec<Vec<u32>>) {
-    let mut lowest_points: Vec<u32> = Vec::new();
+struct LowPoint {
+    row: usize,
+    column: usize,
+    value: u32,
+}
+
+fn find_all_low_points(input: &Vec<Vec<u32>>) -> Vec<LowPoint> {
+    let mut low_points = Vec::new();
     for row_index in 0..input.len() {
         for column_index in 0..input[row_index].len() {
             if is_point_lower_than_orthogonal_neighbors(row_index, column_index, input) {
-                let lowest_point = input[row_index][column_index];
-                if lowest_point == 9 {
-                    dbg!(row_index, column_index);
-                }
-                lowest_points.push(lowest_point + 1);
+                let low_point = input[row_index][column_index];
+                low_points.push(LowPoint {
+                    row: row_index,
+                    column: column_index,
+                    value: low_point,
+                });
             }
         }
     }
+    low_points
+}
 
-    println!("Part 1: {:?}", lowest_points.iter().sum::<u32>());
+fn part_1(input: &Vec<Vec<u32>>) {
+    let mut result: u32 = 0;
+    for low_point in find_all_low_points(input) {
+        result += low_point.value + 1;
+    }
+
+    println!("Part 1: {:?}", result);
 }
 
 fn main() {
