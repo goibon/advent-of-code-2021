@@ -26,11 +26,8 @@ fn find_first_illegal_character(input: &str) -> (Option<char>, HashMap<u8, char>
         }
 
         if let Some(current_opening_char) = map.get(&(current_depth - 1)) {
-            if let Some(index) = OPENING_CHARS
-                .iter()
-                .position(|opening_char| opening_char == current_opening_char)
-            {
-                if character == CLOSING_CHARS[index] {
+            if let Some(matching_closing_char) = find_matching_closing_char(current_opening_char) {
+                if character == matching_closing_char {
                     map.remove(&(current_depth - 1));
                     current_depth -= 1;
                 } else {
@@ -41,6 +38,14 @@ fn find_first_illegal_character(input: &str) -> (Option<char>, HashMap<u8, char>
     }
 
     (None, map)
+}
+
+fn find_matching_closing_char(opening_char: &char) -> Option<char> {
+    OPENING_CHARS
+        .iter()
+        .position(|char| opening_char == char)
+        .and_then(|index| CLOSING_CHARS.get(index))
+        .copied()
 }
 
 fn part_1(input: &[&str]) {
