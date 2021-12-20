@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use std::collections::HashMap;
 use std::env;
 
@@ -62,6 +63,38 @@ fn part_1(input: &[&str]) {
     println!("Part 1: {:?}", score);
 }
 
+fn part_2(input: &[&str]) {
+    let scoring_map: HashMap<char, u32> = HashMap::from([(')', 1), (']', 2), ('}', 3), ('>', 4)]);
+
+    let mut scores: Vec<u64> = Vec::new();
+    for line in input.iter() {
+        let mut score: u64 = 0;
+        if let (None, map) = find_first_illegal_character(line) {
+            map.iter().sorted().rev().for_each(|(_, value)| {
+                if let Some(char_value) = find_matching_closing_char(value)
+                    .and_then(|closing_char| scoring_map.get(&closing_char))
+                {
+                    score *= 5;
+                    score += *char_value as u64;
+                }
+            });
+            scores.push(score);
+        }
+    }
+
+    scores.sort_unstable();
+
+    println!(
+        "Part 2: {:?}",
+        scores
+            .iter()
+            .skip(scores.len() / 2)
+            .collect::<Vec<_>>()
+            .first()
+            .unwrap()
+    );
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let path = &args[1];
@@ -70,4 +103,5 @@ fn main() {
     let input = split_input(&input);
 
     part_1(&input);
+    part_2(&input);
 }
