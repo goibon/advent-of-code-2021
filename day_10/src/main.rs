@@ -11,7 +11,7 @@ fn split_input(string: &String) -> Vec<&str> {
 const OPENING_CHARS: [char; 4] = ['(', '{', '[', '<'];
 const CLOSING_CHARS: [char; 4] = [')', '}', ']', '>'];
 
-fn find_first_illegal_character(input: &str) -> Option<char> {
+fn find_first_illegal_character(input: &str) -> (Option<char>, HashMap<u8, char>) {
     let mut map: HashMap<u8, char> = HashMap::new();
     let mut current_depth: u8 = 0;
     for character in input.chars() {
@@ -22,7 +22,7 @@ fn find_first_illegal_character(input: &str) -> Option<char> {
         }
 
         if current_depth == 0 {
-            return Some(character);
+            return (Some(character), map);
         }
 
         if let Some(current_opening_char) = map.get(&(current_depth - 1)) {
@@ -34,13 +34,13 @@ fn find_first_illegal_character(input: &str) -> Option<char> {
                     map.remove(&(current_depth - 1));
                     current_depth -= 1;
                 } else {
-                    return Some(character);
+                    return (Some(character), map);
                 }
             }
         }
     }
 
-    None
+    (None, map)
 }
 
 fn part_1(input: &[&str]) {
@@ -49,7 +49,7 @@ fn part_1(input: &[&str]) {
 
     let mut score: u32 = 0;
     for line in input.iter() {
-        if let Some(first_illegal_char) = find_first_illegal_character(line) {
+        if let (Some(first_illegal_char), _) = find_first_illegal_character(line) {
             score += scoring_map[&first_illegal_char];
         }
     }
