@@ -64,14 +64,19 @@ fn increment_all_entries(input: &mut Vec<Vec<u32>>) -> Vec<(usize, usize)> {
     octopuses_about_to_flash
 }
 
-fn reset_flashed_entries(input: &mut Vec<Vec<u32>>) {
+fn reset_flashed_entries(input: &mut Vec<Vec<u32>>) -> bool {
+    let mut total_entries = 0_u32;
+    let mut reset_entries = 0_u32;
     for row in input.iter_mut() {
         for column in row.iter_mut() {
+            total_entries += 1;
             if *column > 9 {
+                reset_entries += 1;
                 *column = 0;
             }
         }
     }
+    reset_entries == total_entries
 }
 
 fn flash_recursive(
