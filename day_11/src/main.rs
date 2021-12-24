@@ -140,6 +140,29 @@ fn part_1(input: &[Vec<u32>]) {
     println!("Part 1: {:?}", amount_of_flashes);
 }
 
+fn part_2(input: &[Vec<u32>]) {
+    let mut input = input.to_vec();
+    let mut step = 1_u32;
+    loop {
+        let mut already_flashed_map: HashMap<(usize, usize), bool> = HashMap::new();
+        for (row_index, row) in input.iter().enumerate() {
+            for (column_index, _) in row.iter().enumerate() {
+                already_flashed_map.insert((row_index, column_index), false);
+            }
+        }
+        let octopuses_about_to_flash = increment_all_entries(&mut input);
+        for octopus in octopuses_about_to_flash {
+            flash_recursive(octopus, &mut already_flashed_map, &mut input);
+        }
+        if reset_flashed_entries(&mut input) {
+            break;
+        }
+        step += 1;
+    }
+
+    println!("Part 2: {:?}", step);
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let path = &args[1];
@@ -147,4 +170,5 @@ fn main() {
     let input = std::fs::read_to_string(path).expect("Error reading file.");
     let input = split_input(&input);
     part_1(&input);
+    part_2(&input);
 }
