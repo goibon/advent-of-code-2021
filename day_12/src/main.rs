@@ -106,9 +106,73 @@ fn recurse_caves(
     }
 }
 
+fn can_cave_be_visited(cave_name: &str, caves_visited: &str) -> bool {
+    if caves_visited.matches(cave_name).count() == 0 {
+        return true;
+    }
+
+    if get_size(cave_name) == Size::Small {
+        for visited_cave in caves_visited.split(',') {
+            if get_size(visited_cave) == Size::Small
+                && caves_visited.matches(visited_cave).count() >= 2
+            {
+                return false;
+            }
+        }
+        true
+    } else {
+        true
+    }
+}
+
+fn recurse_caves_part_2(
+    cave_name: &str,
+    caves_visited: &str,
+    caves: &HashMap<String, Cave>,
+) -> Option<Vec<String>> {
+    if cave_name == END_CAVE_NAME {
+        return Some(vec![caves_visited.to_owned() + "," + cave_name]);
+    }
+    if cave_name == START_CAVE_NAME && !caves_visited.is_empty() {
+        return None;
+    }
+
+    if let Some(cave) = caves.get(cave_name) {
+        if can_cave_be_visited(cave_name, caves_visited) {
+            let mut visit_strings: Vec<String> = Vec::new();
+            let caves_visited = if caves_visited.is_empty() {
+                cave_name.to_string()
+            } else {
+                caves_visited.to_owned() + "," + cave_name
+            };
+            for connection_name in &cave.connections {
+                if let Some(strings) = recurse_caves_part_2(connection_name, &caves_visited, caves)
+                {
+                    visit_strings.extend(strings);
+                }
+            }
+            if visit_strings.is_empty() {
+                None
+            } else {
+                Some(visit_strings)
+            }
+        } else {
+            None
+        }
+    } else {
+        None
+    }
+}
+
 fn part_1(input: &HashMap<String, Cave>) {
     if let Some(paths) = recurse_caves(START_CAVE_NAME, "", input) {
         println!("Part 1: {:?}", paths.len());
+    }
+}
+
+fn part_2(input: &HashMap<String, Cave>) {
+    if let Some(paths) = recurse_caves_part_2(START_CAVE_NAME, "", input) {
+        println!("Part 2: {:?}", paths.len());
     }
 }
 
@@ -119,4 +183,5 @@ fn main() {
     let input = std::fs::read_to_string(path).expect("Error reading file.");
     let input = split_input(&input);
     part_1(&input);
+    part_2(&input);
 }
