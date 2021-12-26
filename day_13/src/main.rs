@@ -90,6 +90,49 @@ fn part_1(dot_coordinates: &[(u32, u32)], fold_instructions: &[(char, u32)]) {
     }
 }
 
+const DOT_CHARACTER: char = '#';
+const EMPTY_FIELD_CHARACTER: char = '.';
+
+fn print_map(dot_map: &HashMap<(u32, u32), bool>) {
+    let mut rows: Vec<u32> = Vec::new();
+    let mut columns: Vec<u32> = Vec::new();
+
+    for (column, row) in dot_map.keys() {
+        rows.push(*row);
+        columns.push(*column);
+    }
+
+    rows.sort_unstable();
+    columns.sort_unstable();
+
+    for row in 0..=rows[rows.len() - 1] {
+        let mut row_string = "".to_string();
+        for column in 0..=columns[columns.len() - 1] {
+            match dot_map.get(&(column, row)) {
+                Some(true) => {
+                    row_string += &DOT_CHARACTER.to_string();
+                }
+                None | Some(false) => {
+                    row_string += &EMPTY_FIELD_CHARACTER.to_string();
+                }
+            }
+        }
+        println!("{}", row_string);
+    }
+}
+
+fn part_2(dot_coordinates: &[(u32, u32)], fold_instructions: &[(char, u32)]) {
+    let mut map = coordinates_to_map(dot_coordinates);
+    for (fold_instruction, folding_index) in fold_instructions {
+        map = if *fold_instruction == FOLD_UP_INSTRUCTION {
+            fold_up(&map, *folding_index)
+        } else {
+            fold_left(&map, *folding_index)
+        };
+    }
+    print_map(&map);
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let path = &args[1];
@@ -98,4 +141,5 @@ fn main() {
     let (dot_coordinates, fold_instructions) = split_input(&input);
 
     part_1(&dot_coordinates, &fold_instructions);
+    part_2(&dot_coordinates, &fold_instructions);
 }
