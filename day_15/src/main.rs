@@ -108,6 +108,47 @@ fn part_1(input: &[Vec<u32>]) {
     println!("Part 1: {}", dijkstras(input).unwrap());
 }
 
+fn replicate_map(map: &[Vec<u32>]) -> Vec<Vec<u32>> {
+    let mut result = Vec::new();
+
+    for row in map {
+        let mut new_row = row.clone();
+        for i in 1..5 {
+            for column in row {
+                new_row.push(if *column + i > 9 {
+                    column + i - 9
+                } else {
+                    column + i
+                });
+            }
+        }
+        result.push(new_row);
+    }
+
+    for i in 0..4 {
+        for row_index in 0..map.len() {
+            let new_row: Vec<u32> = result[row_index + i * map.len()]
+                .iter()
+                .map(|column| {
+                    if *column + 1 > 9 {
+                        column + 1 - 9
+                    } else {
+                        column + 1
+                    }
+                })
+                .collect();
+            result.push(new_row);
+        }
+    }
+
+    result
+}
+
+fn part_2(input: &[Vec<u32>]) {
+    let larger_map = replicate_map(input);
+    println!("Part 2: {}", dijkstras(&larger_map).unwrap());
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let path = &args[1];
@@ -116,4 +157,5 @@ fn main() {
     let input = split_input(&input);
 
     part_1(&input);
+    part_2(&input);
 }
